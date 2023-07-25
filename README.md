@@ -3,7 +3,6 @@ BOT_CENSO_CADASTRO_DE_TURMA
 
 Código dos Cursos:
 
-
 "4050 - Administração "
 
 "2030 - Biblioteconomia"
