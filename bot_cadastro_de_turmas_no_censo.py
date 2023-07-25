@@ -190,12 +190,11 @@ class Bot:
 
                 bot.__acessar_pagina_inicial(page)
 
-                input('Faça login no CENSO ESCOLAR, depois tecle [ENTER] para continuar...')
-
             except BaseException:
 
-                falha_critica = True
-                print('Houve uma falha crítica.')
+                pass
+
+            input('Faça login no CENSO ESCOLAR, depois tecle [ENTER] para continuar...')
                 
             while (bot.__verificar_se_ha_turmas_para_cadastrar() and not falha_critica):
                 
