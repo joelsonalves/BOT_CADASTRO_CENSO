@@ -90,8 +90,8 @@ class Bot:
 
             status = 15
 
-            # espearar 5 segundos
-            page.wait_for_timeout(5 * 1000)
+            # esperar carregamento
+            page.wait_for_selector('#idLocalDiferenciado')
 
             status = 14
 
@@ -106,7 +106,7 @@ class Bot:
             status = 12
 
             # espearar 5 segundos
-            page.wait_for_timeout(5 * 1000)
+            page.wait_for_selector('#idModalidadeAno1')
 
             status = 11
 
@@ -155,7 +155,7 @@ class Bot:
 
             status = 2
 
-            # espearar 10 segundos
+            # esperar 10 segundos
             page.wait_for_timeout(10 * 1000)
 
             status = 1
