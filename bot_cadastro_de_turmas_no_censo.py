@@ -100,7 +100,7 @@ class Bot:
 
             status = 12
 
-            # espearar 5 segundos
+            # espearar carregamento
             page.wait_for_selector('#idModalidadeAno1')
 
             status = 11
@@ -120,8 +120,8 @@ class Bot:
 
             status = 8
 
-            # Esperar 5 segundos
-            page.wait_for_timeout(5 * 1000)
+            # espearar carregamento
+            page.wait_for_selector('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs')
 
             status = 7
 
