@@ -188,12 +188,13 @@ class Bot:
 
             try:
 
-                bot.__acessar_pagina_inicial()
+                bot.__acessar_pagina_inicial(page)
 
             except BaseException:
 
                 falha_critica = True
-
+                print('Houve uma falha crítica.')
+                
             while (bot.__verificar_se_ha_turmas_para_cadastrar() and not falha_critica):
                 
                 bot.__selecionar_proxima_turma_para_cadastrar()
@@ -215,6 +216,8 @@ class Bot:
             except BaseException:
 
                 pass
+            
+            print('Automação finalizada.')
 
 if __name__ == '__main__':
 
