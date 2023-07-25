@@ -73,75 +73,80 @@ class Bot:
 
         try:
 
-            status = 17
+            status = 18
 
             # Acessar página de cadastro de turma
             page.goto(self.__URL_CADASTRO_DE_TURMA)
 
-            status = 16
+            status = 17
 
             # Preencher o nome da turma
             page.locator('#input_nomeTurma').fill(self.__nome_da_turma)
 
-            status = 15
+            status = 16
 
             # Selecionar o tipo
             page.locator('#idtipoMediacaoDidaticoPedagogica').select_option(label='Educação a distância - EAD')
 
-            status = 14
+            status = 15
 
             # Marcar a escolarização
             page.locator('#checkbox_idTipoAtendimento0').click()
 
-            status = 13
+            status = 14
 
             # espearar carregamento
             page.wait_for_selector('#idModalidadeAno1')
 
-            status = 12
+            status = 13
 
             # Selecionar a modalidade
             page.locator('#idModalidadeAno1').select_option(label='Educação profissional')
 
-            status = 11
+            status = 12
 
             # Selecionar o filtro da etapa
             page.locator('#filtroEtapa').select_option(label='Educação Profissional Técnica de Nível Médio - Integrada')
 
-            status = 10
+            status = 11
 
             # Selecionar a etapa
             page.locator('#idEtapa').select_option(label='Curso técnico integrado (ensino médio integrado) não seriada')
 
-            status = 9
+            status = 10
 
             # espearar carregamento
             page.wait_for_selector('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs')
 
-            status = 8
+            status = 9
 
             # Clicar na confirmação da etapa
             page.locator('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs').click()
 
-            status = 7
+            status = 8
 
             # espearar carregamento
             page.wait_for_selector('#idCurso')
 
-            status = 6
+            status = 7
 
             # Selecionar código do curso
             page.locator('#idCurso').select_option(self.__codigo_do_curso)
 
-            status = 5
+            status = 6
 
             # Clicar em módulos
             page.locator('#checkbox_idFormaOrganizacaoTurma3').click()
 
+            status = 5
+
+            # Clicar na área de conhecimento
+            page.locator('#checkbox_outraAreas0').click()
+
             status = 4
 
             # Clicar em outras áreas de conhecimento
-            page.locator('#checkbox_outraAreas0').click()
+            page.locator('#checkbox_outraAreas4').click()
 
             status = 3
 
