@@ -131,7 +131,7 @@ class Bot:
             status = 6
 
             # Selecionar código do curso
-            page.locator('#idCurso').select_option(label=self.__codigo_do_curso)
+            page.locator('#idCurso').select_option(self.__codigo_do_curso)
 
             status = 5
 
