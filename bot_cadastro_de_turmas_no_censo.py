@@ -73,30 +73,25 @@ class Bot:
 
         try:
 
-            status = 18
+            status = 17
 
             # Acessar página de cadastro de turma
             page.goto(self.__URL_CADASTRO_DE_TURMA)
 
-            status = 17
+            status = 16
 
             # Preencher o nome da turma
             page.locator('#input_nomeTurma').fill(self.__nome_da_turma)
 
-            status = 16
+            status = 15
 
             # Selecionar o tipo
             page.locator('#idtipoMediacaoDidaticoPedagogica').select_option(label='Educação a distância - EAD')
 
-            status = 15
+            status = 14
 
             # esperar carregamento
             page.wait_for_selector('#idLocalDiferenciado')
-
-            status = 14
-
-            # Selecionar o local
-            page.locator('#idLocalDiferenciado').select_option(label='A turma não está em local de funcionamento diferenciado')
 
             status = 13
 
