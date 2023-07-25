@@ -190,6 +190,8 @@ class Bot:
 
                 bot.__acessar_pagina_inicial(page)
 
+                input('Faça login no CENSO ESCOLAR, depois tecle [ENTER] para continuar...')
+
             except BaseException:
 
                 falha_critica = True
