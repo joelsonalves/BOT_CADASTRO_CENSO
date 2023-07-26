@@ -92,6 +92,9 @@ class Bot:
 
             status = 19
 
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
+
             # Marcar a escolarização
             page.evaluate(''' () => { 
         
@@ -101,8 +104,8 @@ class Bot:
 
             status = 18
 
-            # espearar carregamento
-            page.wait_for_selector('#checkbox_idEstruturaCurricular2')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 17
 
@@ -115,8 +118,8 @@ class Bot:
 
             status = 16
 
-            # espearar carregamento
-            page.wait_for_selector('#idModalidadeAno1')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 15
 
@@ -138,8 +141,8 @@ class Bot:
 
             status = 12
 
-            # esperar carregamento
-            page.wait_for_selector('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 11
 
@@ -148,8 +151,8 @@ class Bot:
 
             status = 10
 
-            # esperar carregamento
-            page.wait_for_selector('#idCurso')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 9
 
@@ -158,8 +161,8 @@ class Bot:
 
             status = 8
 
-            # esperar carregamento
-            page.wait_for_selector('#checkbox_idFormaOrganizacaoTurma3')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 7
 
@@ -172,8 +175,8 @@ class Bot:
 
             status = 6
 
-            # esperar carregamento
-            page.wait_for_selector('#checkbox_outraAreas0')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 5
 
@@ -186,8 +189,8 @@ class Bot:
 
             status = 4
 
-            # esperar carregamento
-            page.wait_for_selector('button:has-text("Enviar")')
+            # esperar 3 segundos
+            page.wait_for_timeout(3 * 1000)
 
             status = 3
 
@@ -224,7 +227,7 @@ class Bot:
 
         with sync_playwright() as p:
 
-            browser = p.chromium.launch(headless=False)
+            browser = p.webkit.launch(headless=False)
             context = browser.new_context()
             context.clear_cookies()
             page = context.new_page()
