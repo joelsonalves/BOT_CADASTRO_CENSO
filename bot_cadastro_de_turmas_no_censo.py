@@ -73,89 +73,85 @@ class Bot:
 
         try:
 
-            status = 21
+            status = 20
 
             # Acessar página de cadastro de turma
             page.goto(self.__URL_CADASTRO_DE_TURMA)
 
-            status = 20
+            status = 19
 
             # Preencher o nome da turma
             page.locator('#input_nomeTurma').fill(self.__nome_da_turma)
 
-            status = 19
+            status = 18
 
             # Selecionar o tipo
             page.locator('#idtipoMediacaoDidaticoPedagogica').select_option(label='Educação a distância - EAD')
 
-            status = 18
+            status = 17
 
             # Marcar a escolarização
             page.locator('#checkbox_idTipoAtendimento0').click()
 
-            status = 17
+            status = 16
 
             # espearar carregamento
             page.wait_for_selector('#idModalidadeAno1')
 
-            status = 16
+            status = 15
 
             # Selecionar a modalidade
             page.locator('#idModalidadeAno1').select_option(label='Educação profissional')
 
-            status = 15
+            status = 14
 
             # Selecionar o filtro da etapa
             page.locator('#filtroEtapa').select_option(label='Educação Profissional Técnica de Nível Médio - Integrada')
 
-            status = 14
+            status = 13
 
             # Selecionar a etapa
             page.locator('#idEtapa').select_option(label='Curso técnico integrado (ensino médio integrado) não seriada')
 
-            status = 13
+            status = 12
 
             # espearar carregamento
             page.wait_for_selector('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs')
 
-            status = 12
+            status = 11
 
             # Clicar na confirmação da etapa
             page.locator('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs').click()
 
-            status = 11
+            status = 10
 
             # espearar carregamento
             page.wait_for_selector('#idCurso')
 
-            status = 10
+            status = 9
 
             # Selecionar código do curso
             page.locator('#idCurso').select_option(self.__codigo_do_curso)
 
-            status = 9
+            status = 8
 
             # Clicar em módulos
             page.locator('#checkbox_idFormaOrganizacaoTurma3').click()
 
-            status = 8
+            status = 7
 
             # espearar carregamento
             page.wait_for_selector('#checkbox_outraAreas0')
 
-            status = 7
+            status = 6
 
             # Clicar em outras áreas de conhecimento
             page.locator('#checkbox_outraAreas0').click()
 
-            status = 6
+            status = 5
 
             # espearar carregamento
             page.wait_for_selector('button:has-text("Enviar")')
-
-            status = 5
-
-            page.locator('button:has-text("Enviar")').hover()
 
             status = 4
 
@@ -165,7 +161,11 @@ class Bot:
             status = 3
 
             # Clicar no botão enviar
-            page.locator('button:has-text("Enviar")').click()
+            page.evaluate(''' () => { 
+        
+                document.querySelector('button[type="submit"]');  
+
+            } ''')
 
             status = 2
 
