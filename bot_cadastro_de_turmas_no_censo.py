@@ -11,6 +11,7 @@ class Bot:
         self.__index = None
         self.__nome_da_turma = None
         self.__codigo_do_curso = None
+        self.__etapa = None
 
     def __acessar_pagina_inicial(self, page):
 
@@ -42,6 +43,7 @@ class Bot:
         self.__index = df_aux.loc[0, 'index']
         self.__nome_da_turma = df_aux.loc[0, 'NOME_DA_TURMA']
         self.__codigo_do_curso = df_aux.loc[0, 'CODIGO_DO_CURSO']
+        self.__etapa = df_aux.loc[0, 'ETAPA']
 
         df = None
         df_aux = None
@@ -73,118 +75,133 @@ class Bot:
 
         try:
 
-            status = 19
+            status = 22
 
             # Acessar página de cadastro de turma
-            print('Abrir a página de cadastro de turma.')
             page.goto(self.__URL_CADASTRO_DE_TURMA)
+
+            status = 21
+
+            # Preencher o nome da turma
+            page.locator('#input_nomeTurma').fill(self.__nome_da_turma)
+
+            status = 20
+
+            # Selecionar o tipo
+            page.locator('#idtipoMediacaoDidaticoPedagogica').select_option(label='Educação a distância - EAD')
+
+            status = 19
+
+            # Marcar a escolarização
+            page.evaluate(''' () => { 
+        
+                document.querySelector('#checkbox_idTipoAtendimento0').click();  
+
+            } ''')
 
             status = 18
 
-            # Preencher o nome da turma
-            print('Preencher o nome da turma.')
-            page.locator('#input_nomeTurma').fill(self.__nome_da_turma)
+            # espearar carregamento
+            page.wait_for_selector('#checkbox_idEstruturaCurricular2')
 
             status = 17
 
-            # Selecionar o tipo
-            print('Selecionar o tipo.')
-            page.locator('#idtipoMediacaoDidaticoPedagogica').select_option(label='Educação a distância - EAD')
+            # Marcar não se aplica na estrutura curricular
+            page.evaluate(''' () => { 
+        
+                document.querySelector('#checkbox_idEstruturaCurricular2').click();  
+
+            } ''')
 
             status = 16
 
-            # Marcar a escolarização
-            print('Marcar a escolarização.')
-            page.locator('#checkbox_idTipoAtendimento0').click()
+            # espearar carregamento
+            page.wait_for_selector('#idModalidadeAno1')
 
             status = 15
 
-            # espearar carregamento
-            print('Aguardar o seletor de modalidade ficar disponível.')
-            page.wait_for_selector('#idModalidadeAno1')
+            # Selecionar a modalidade
+            page.locator('#idModalidadeAno1').select_option(label='Educação profissional')
 
             status = 14
 
-            # Selecionar a modalidade
-            print('Selecionar a modalidade.')
-            page.locator('#idModalidadeAno1').select_option(label='Educação profissional')
+            # Selecionar o filtro da etapa
+            page.locator('#filtroEtapa').select_option(label='Educação Profissional Técnica de Nível Médio')
 
             status = 13
 
-            # Selecionar o filtro da etapa
-            print('Selecionar o filtro da etapa.')
-            page.locator('#filtroEtapa').select_option(label='Educação Profissional Técnica de Nível Médio - Integrada')
+            # Selecionar a etapa
+            if (self.__etapa.upper() == 'C'):
+                page.locator('#idEtapa').select_option(label='Curso técnico  - concomitante')
+            elif (self.__etapa.upper() == 'S'):
+                page.locator('#idEtapa').select_option(label='Curso técnico  - subsequente')
 
             status = 12
 
-            # Selecionar a etapa
-            print('Selecionar a etapa.')
-            page.locator('#idEtapa').select_option(label='Curso técnico integrado (ensino médio integrado) não seriada')
+            # esperar carregamento
+            page.wait_for_selector('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs')
 
             status = 11
 
-            # esperar carregamento
-            print('Aguardar o botão de confirmação da etapa ficar disponível.')
-            page.wait_for_selector('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs')
+            # Clicar na confirmação da etapa
+            page.locator('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs').click()
 
             status = 10
 
-            # Clicar na confirmação da etapa
-            print('Clicar no botão de confirmação da etapa.')
-            page.locator('i.fa.fa-check-circle.fa-2x.text-success.btn.btn-xs').click()
+            # esperar carregamento
+            page.wait_for_selector('#idCurso')
 
             status = 9
 
-            # esperar carregamento
-            print('Aguardar o seletor do código do curso ficar disponível.')
-            page.wait_for_selector('#idCurso')
+            # Selecionar código do curso
+            page.locator('#idCurso').select_option(self.__codigo_do_curso)
 
             status = 8
 
-            # Selecionar código do curso
-            print(f'Selecionar o código do curso: {self.__codigo_do_curso}')
-            page.locator('#idCurso').select_option(self.__codigo_do_curso)
+            # esperar carregamento
+            page.wait_for_selector('#checkbox_idFormaOrganizacaoTurma3')
 
             status = 7
 
             # Clicar em módulos
-            print('Marcar a caixa de Módulos.')
-            page.locator('#checkbox_idFormaOrganizacaoTurma3').click()
+            page.evaluate(''' () => { 
+        
+                document.querySelector('#checkbox_idFormaOrganizacaoTurma3').click();  
+
+            } ''')
 
             status = 6
 
             # esperar carregamento
-            print('Aguardar a caixa da área ficar disponível.')
             page.wait_for_selector('#checkbox_outraAreas0')
 
             status = 5
 
-            # Clicar na área
-            print('Marcar a área.')
-            page.locator('#checkbox_outraAreas0').click()
+            # Marcar áreas do conhecimento profissionalizantes
+            page.evaluate(''' () => { 
+        
+                document.querySelector('#checkbox_outraAreas0').click();  
+
+            } ''')
 
             status = 4
 
             # esperar carregamento
-            print('Aguardar o botão Enviar ficar disponível.')
             page.wait_for_selector('button:has-text("Enviar")')
 
             status = 3
 
             # Clicar no botão enviar
-            print('Clicar no botão Enviar.')
             page.evaluate(''' () => { 
         
-                document.querySelector('button[type="submit"]');  
+                document.querySelector('button[type="submit"]').click();  
 
             } ''')
 
             status = 2
 
             # esperar 10 segundos
-            for i in range(10):
-                print(f'Esperando {i + 1} segundo(s).')
-                page.wait_for_timeout(1000)
+            page.wait_for_timeout(10 * 1000)
 
             status = 1
 
@@ -199,6 +216,7 @@ class Bot:
         self.__index = None
         self.__nome_da_turma = None
         self.__codigo_do_curso = None
+        self.__etapa = None
 
     def run():
 
