@@ -151,17 +151,17 @@ class Bot:
             status = 4
 
             # espearar carregamento
-            page.wait_for_selector('button[type="submit"]')
+            page.wait_for_selector('button:has-text("Enviar")')
 
             status = 3
 
             # Clicar no botão enviar
-            page.locator('button[type="submit"]')
+            page.locator('button:has-text("Enviar")').click()
 
             status = 2
 
-            # esperar carregamento
-            page.wait_for_load_state()
+            # esperar 10 segundos
+            page.wait_for_timeout(10 * 1000)
 
             status = 1
 
