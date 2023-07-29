@@ -222,8 +222,11 @@ def executar_vinculacao_de_estudantes_no_censo():
         except BaseException:
             pass
 
-        context.close()
-        browser.close()
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
 
 def verificar_necessidade_de_definir_localizacao(sisacad_xlsx):
     df = pd.read_excel(sisacad_xlsx, dtype=str)
@@ -359,8 +362,11 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo():
         except BaseException:
             pass
 
-        context.close()
-        browser.close()
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
 
 def verificar_necessidade_de_ajustar_para_subsequente(censo_xlsx):
     df = pd.read_excel(censo_xlsx, dtype=str)
@@ -531,9 +537,11 @@ def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente():
         except BaseException:
             pass
 
-        context.close()
-        browser.close()
-
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
 
 def verificar_necessidade_de_ajustar_turma_pelo_identificador(censo_xlsx):
     df = pd.read_excel(censo_xlsx, dtype=str)
@@ -672,9 +680,11 @@ def executar_ajuste_de_turma_pelo_identificador():
         except BaseException:
             pass
 
-        context.close()
-        browser.close()
-
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
 
 def verificar_necessidade_de_definir_localizacao_pelo_identificador(censo_xlsx):
     df = pd.read_excel(censo_xlsx, dtype=str)
@@ -799,9 +809,11 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo_pelo_i
         except BaseException:
             pass
 
-        context.close()
-        browser.close()
-
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
 
 def verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(censo_xlsx):
     df = pd.read_excel(censo_xlsx, dtype=str)
@@ -933,9 +945,11 @@ def executar_ajuste_no_municipio_pelo_identificador():
         except BaseException:
             pass
 
-        context.close()
-        browser.close()
-
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
 
 # Carregamento da aplicação
 if __name__ == '__main__':
