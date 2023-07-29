@@ -1,4 +1,4 @@
-# BOT_CENSO_CADASTRO_DE_TURMA
+# BOT_CADASTRO_CENSO
 
 Código dos Cursos:
 
