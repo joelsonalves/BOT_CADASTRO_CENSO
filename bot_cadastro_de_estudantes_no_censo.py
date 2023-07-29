@@ -23,8 +23,8 @@ lista_de_opcoes = [
     DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR
 ]
 
-arquivo_csv = 'lista.csv'
-arquivo_xlsx = 'lista.xlsx'
+sisacad_xlsx = 'estudantes_sisacad.xlsx'
+censo_xlsx = 'estudantes_censo.xlsx'
 
 def desenhar_tela_inicial():
     print('\n#####################################################')
@@ -50,16 +50,16 @@ def escolher_opcao_de_execucao():
             print('Opção inválida. Tente novamente.')
     return opcao
 
-def verificar_necessidade_de_vincular(arquivo_csv):
-    df = pd.read_csv(arquivo_csv, encoding='iso-8859-1', sep=';', dtype=str)
+def verificar_necessidade_de_vincular(sisacad_xlsx):
+    df = pd.read_excel(sisacad_xlsx, dtype=str)
     if df.loc[df['STATUS'] == '0'].shape[0] > 0:
         df = None
         return True
     df = None
     return False
     
-def proximo_estudante_para_vincular(arquivo_csv):
-    df = pd.read_csv(arquivo_csv, encoding='iso-8859-1', sep=';', dtype=str)
+def proximo_estudante_para_vincular(sisacad_xlsx):
+    df = pd.read_excel(sisacad_xlsx, dtype=str)
     estudante = {
         'index': None,
         'cpf': None,
@@ -76,11 +76,11 @@ def proximo_estudante_para_vincular(arquivo_csv):
     df = None
     return estudante
 
-def salvar_status_do_estudante_em_relacao_ao_vinculo(arquivo_csv, estudante):
+def salvar_status_do_estudante_em_relacao_ao_vinculo(sisacad_xlsx, estudante):
     if estudante['index'] != None:
-        df = pd.read_csv(arquivo_csv, encoding='iso-8859-1', sep=';', dtype=str)
+        df = pd.read_excel(sisacad_xlsx, dtype=str)
         df.loc[estudante['index'], 'STATUS'] = estudante['status']
-        df.to_csv(arquivo_csv, encoding='iso-8859-1', sep=';', index=False)
+        df.to_excel(sisacad_xlsx, index=False)
         df = None
         return True
     return False
@@ -147,9 +147,9 @@ def executar_vinculacao_de_estudantes_no_censo():
         #Aguardar login humano
         input('Após fazer login, tecle [Enter]: ')
 
-        while verificar_necessidade_de_vincular(arquivo_csv):
+        while verificar_necessidade_de_vincular(sisacad_xlsx):
 
-            estudante = proximo_estudante_para_vincular(arquivo_csv)
+            estudante = proximo_estudante_para_vincular(sisacad_xlsx)
             
             if tentativa_cpf != estudante['cpf']:
                 tentativa_cpf = estudante['cpf']
@@ -210,9 +210,9 @@ def executar_vinculacao_de_estudantes_no_censo():
                 esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
             
             print(f'''{estudante['cpf']} - Status: {estudante['status']}''')
-            salvar_status_do_estudante_em_relacao_ao_vinculo(arquivo_csv, estudante)
+            salvar_status_do_estudante_em_relacao_ao_vinculo(sisacad_xlsx, estudante)
 
-        if not verificar_necessidade_de_vincular(arquivo_csv):
+        if not verificar_necessidade_de_vincular(sisacad_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA CADASTRAR !!!!!!!')
@@ -225,16 +225,16 @@ def executar_vinculacao_de_estudantes_no_censo():
         context.close()
         browser.close()
 
-def verificar_necessidade_de_definir_localizacao(arquivo_csv):
-    df = pd.read_csv(arquivo_csv, encoding='iso-8859-1', sep=';', dtype=str)
+def verificar_necessidade_de_definir_localizacao(sisacad_xlsx):
+    df = pd.read_excel(sisacad_xlsx, dtype=str)
     if df.loc[(df['STATUS_LOC'] == '0') & (df['STATUS'] == '1')].shape[0] > 0 :
         df = None
         return True
     df = None
     return False
 
-def proximo_estudante_para_definir_localizacao(arquivo_csv):
-    df = pd.read_csv(arquivo_csv, encoding='iso-8859-1', sep=';', dtype=str)
+def proximo_estudante_para_definir_localizacao(sisacad_xlsx):
+    df = pd.read_excel(sisacad_xlsx, dtype=str)
     estudante = {
         'index': None,
         'cpf': None,
@@ -251,11 +251,11 @@ def proximo_estudante_para_definir_localizacao(arquivo_csv):
     df = None
     return estudante
 
-def salvar_status_do_estudante_em_relacao_a_localizacao(arquivo_csv, estudante):
+def salvar_status_do_estudante_em_relacao_a_localizacao(sisacad_xlsx, estudante):
     if estudante['index'] != None:
-        df = pd.read_csv(arquivo_csv, encoding='iso-8859-1', sep=';', dtype=str)
+        df = pd.read_excel(sisacad_xlsx, dtype=str)
         df.loc[estudante['index'], 'STATUS_LOC'] = estudante['status_loc']
-        df.to_csv(arquivo_csv, encoding='iso-8859-1', sep=';', index=False)
+        df.to_excel(sisacad_xlsx, index=False)
         df = None
         return True
     return False
@@ -293,9 +293,9 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo():
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
 
-        while verificar_necessidade_de_definir_localizacao(arquivo_csv):
+        while verificar_necessidade_de_definir_localizacao(sisacad_xlsx):
 
-            estudante = proximo_estudante_para_definir_localizacao(arquivo_csv)
+            estudante = proximo_estudante_para_definir_localizacao(sisacad_xlsx)
             
             if tentativa_cpf != estudante['cpf']:
                 tentativa_cpf = estudante['cpf']
@@ -347,9 +347,9 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo():
                 esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
             
             print(f'''{estudante['cpf']} - Status: {estudante['status_loc']}''')
-            salvar_status_do_estudante_em_relacao_a_localizacao(arquivo_csv, estudante)
+            salvar_status_do_estudante_em_relacao_a_localizacao(sisacad_xlsx, estudante)
         
-        if not verificar_necessidade_de_definir_localizacao(arquivo_csv):
+        if not verificar_necessidade_de_definir_localizacao(sisacad_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA DEFINIR LOCALIZAÇÃO !!!!!!!')
@@ -362,16 +362,16 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo():
         context.close()
         browser.close()
 
-def verificar_necessidade_de_ajustar_para_subsequente(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def verificar_necessidade_de_ajustar_para_subsequente(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     if df.loc[(df['STATUS_3ANO'] == '0')].shape[0] > 0 :
         df = None
         return True
     df = None
     return False
 
-def proximo_estudante_para_ajustar_para_subsequente(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def proximo_estudante_para_ajustar_para_subsequente(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     estudante = {
         'index': None,
         'identificador': None,
@@ -388,11 +388,11 @@ def proximo_estudante_para_ajustar_para_subsequente(arquivo_xlsx):
     df = None
     return estudante
 
-def salvar_status_do_estudante_em_relacao_ao_3ano(arquivo_xlsx, estudante):
+def salvar_status_do_estudante_em_relacao_ao_3ano(censo_xlsx, estudante):
     if estudante['index'] != None:
-        df = pd.read_excel(arquivo_xlsx, dtype=str)
+        df = pd.read_excel(censo_xlsx, dtype=str)
         df.loc[estudante['index'], 'STATUS_3ANO'] = estudante['status_3ano']
-        df.to_excel(arquivo_xlsx, index=False)
+        df.to_excel(censo_xlsx, index=False)
         df = None
         return True
     return False
@@ -442,9 +442,9 @@ def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente():
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
 
-        while verificar_necessidade_de_ajustar_para_subsequente(arquivo_xlsx):
+        while verificar_necessidade_de_ajustar_para_subsequente(censo_xlsx):
 
-            estudante = proximo_estudante_para_ajustar_para_subsequente(arquivo_xlsx)
+            estudante = proximo_estudante_para_ajustar_para_subsequente(censo_xlsx)
             
             if tentativa_identificador != estudante['identificador']:
                 tentativa_identificador = estudante['identificador']
@@ -519,9 +519,9 @@ def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente():
                 esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
             
             print(f'''{estudante['identificador']} - Status: {estudante['status_3ano']}''')
-            salvar_status_do_estudante_em_relacao_ao_3ano(arquivo_xlsx, estudante)
+            salvar_status_do_estudante_em_relacao_ao_3ano(censo_xlsx, estudante)
         
-        if not verificar_necessidade_de_ajustar_para_subsequente(arquivo_xlsx):
+        if not verificar_necessidade_de_ajustar_para_subsequente(censo_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA AJUSTAR PARA SUBSEQUENTE !!!!!!!')
@@ -535,16 +535,16 @@ def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente():
         browser.close()
 
 
-def verificar_necessidade_de_ajustar_turma_pelo_identificador(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def verificar_necessidade_de_ajustar_turma_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     if df.loc[(df['STATUS_TURMA'] == '0')].shape[0] > 0 :
         df = None
         return True
     df = None
     return False
 
-def proximo_estudante_para_ajustar_turma_pelo_identificador(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def proximo_estudante_para_ajustar_turma_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     estudante = {
         'index': None,
         'identificador': None,
@@ -561,11 +561,11 @@ def proximo_estudante_para_ajustar_turma_pelo_identificador(arquivo_xlsx):
     df = None
     return estudante
 
-def salvar_status_do_estudante_em_relacao_ao_ajuste_de_turma(arquivo_xlsx, estudante):
+def salvar_status_do_estudante_em_relacao_ao_ajuste_de_turma(censo_xlsx, estudante):
     if estudante['index'] != None:
-        df = pd.read_excel(arquivo_xlsx, dtype=str)
+        df = pd.read_excel(censo_xlsx, dtype=str)
         df.loc[estudante['index'], 'STATUS_TURMA'] = estudante['status_turma']
-        df.to_excel(arquivo_xlsx, index=False)
+        df.to_excel(censo_xlsx, index=False)
         df = None
         return True
     return False
@@ -590,9 +590,9 @@ def executar_ajuste_de_turma_pelo_identificador():
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
 
-        while verificar_necessidade_de_ajustar_turma_pelo_identificador(arquivo_xlsx):
+        while verificar_necessidade_de_ajustar_turma_pelo_identificador(censo_xlsx):
 
-            estudante = proximo_estudante_para_ajustar_turma_pelo_identificador(arquivo_xlsx)
+            estudante = proximo_estudante_para_ajustar_turma_pelo_identificador(censo_xlsx)
             
             if tentativa_identificador != estudante['identificador']:
                 tentativa_identificador = estudante['identificador']
@@ -660,9 +660,9 @@ def executar_ajuste_de_turma_pelo_identificador():
                 esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
             
             print(f'''{estudante['identificador']} - Status: {estudante['status_turma']}''')
-            salvar_status_do_estudante_em_relacao_ao_ajuste_de_turma(arquivo_xlsx, estudante)
+            salvar_status_do_estudante_em_relacao_ao_ajuste_de_turma(censo_xlsx, estudante)
         
-        if not verificar_necessidade_de_ajustar_turma_pelo_identificador(arquivo_xlsx):
+        if not verificar_necessidade_de_ajustar_turma_pelo_identificador(censo_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA AJUSTAR TURMA NA LISTA !!!!!!!')
@@ -676,16 +676,16 @@ def executar_ajuste_de_turma_pelo_identificador():
         browser.close()
 
 
-def verificar_necessidade_de_definir_localizacao_pelo_identificador(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def verificar_necessidade_de_definir_localizacao_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     if df.loc[(df['STATUS_LOC'] == '0') & (df['STATUS_TURMA'] == '1')].shape[0] > 0 :
         df = None
         return True
     df = None
     return False
 
-def proximo_estudante_para_definir_localizacao_pelo_identificador(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def proximo_estudante_para_definir_localizacao_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     estudante = {
         'index': None,
         'identificador': None,
@@ -702,11 +702,11 @@ def proximo_estudante_para_definir_localizacao_pelo_identificador(arquivo_xlsx):
     df = None
     return estudante
 
-def salvar_status_do_estudante_em_relacao_a_localizacao_pelo_identificador(arquivo_xlsx, estudante):
+def salvar_status_do_estudante_em_relacao_a_localizacao_pelo_identificador(censo_xlsx, estudante):
     if estudante['index'] != None:
-        df = pd.read_excel(arquivo_xlsx, dtype=str)
+        df = pd.read_excel(censo_xlsx, dtype=str)
         df.loc[estudante['index'], 'STATUS_LOC'] = estudante['status_loc']
-        df.to_excel(arquivo_xlsx, index=False)
+        df.to_excel(censo_xlsx, index=False)
         df = None
         return True
     return False
@@ -731,9 +731,9 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo_pelo_i
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
 
-        while verificar_necessidade_de_definir_localizacao_pelo_identificador(arquivo_xlsx):
+        while verificar_necessidade_de_definir_localizacao_pelo_identificador(censo_xlsx):
 
-            estudante = proximo_estudante_para_definir_localizacao_pelo_identificador(arquivo_xlsx)
+            estudante = proximo_estudante_para_definir_localizacao_pelo_identificador(censo_xlsx)
             
             if tentativa_identificador != estudante['identificador']:
                 tentativa_identificador = estudante['identificador']
@@ -787,9 +787,9 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo_pelo_i
                 esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
             
             print(f'''{estudante['identificador']} - Status: {estudante['status_loc']}''')
-            salvar_status_do_estudante_em_relacao_a_localizacao_pelo_identificador(arquivo_xlsx, estudante)
+            salvar_status_do_estudante_em_relacao_a_localizacao_pelo_identificador(censo_xlsx, estudante)
         
-        if not verificar_necessidade_de_definir_localizacao_pelo_identificador(arquivo_xlsx):
+        if not verificar_necessidade_de_definir_localizacao_pelo_identificador(censo_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA DEFINIR LOCALIZAÇÃO !!!!!!!')
@@ -803,16 +803,16 @@ def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo_pelo_i
         browser.close()
 
 
-def verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     if df.loc[(df['STATUS_MUNICIPIO'] == '0')].shape[0] > 0 :
         df = None
         return True
     df = None
     return False
 
-def proximo_estudante_para_ajustar_municipio_pelo_identificador(arquivo_xlsx):
-    df = pd.read_excel(arquivo_xlsx, dtype=str)
+def proximo_estudante_para_ajustar_municipio_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
     estudante = {
         'index': None,
         'identificador': None,
@@ -829,11 +829,11 @@ def proximo_estudante_para_ajustar_municipio_pelo_identificador(arquivo_xlsx):
     df = None
     return estudante
 
-def salvar_status_do_estudante_em_relacao_ao_municipio(arquivo_xlsx, estudante):
+def salvar_status_do_estudante_em_relacao_ao_municipio(censo_xlsx, estudante):
     if estudante['index'] != None:
-        df = pd.read_excel(arquivo_xlsx, dtype=str)
+        df = pd.read_excel(censo_xlsx, dtype=str)
         df.loc[estudante['index'], 'STATUS_MUNICIPIO'] = estudante['status_municipio']
-        df.to_excel(arquivo_xlsx, index=False)
+        df.to_excel(censo_xlsx, index=False)
         df = None
         return True
     return False
@@ -867,9 +867,9 @@ def executar_ajuste_no_municipio_pelo_identificador():
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
 
-        while verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(arquivo_xlsx):
+        while verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(censo_xlsx):
 
-            estudante = proximo_estudante_para_ajustar_municipio_pelo_identificador(arquivo_xlsx)
+            estudante = proximo_estudante_para_ajustar_municipio_pelo_identificador(censo_xlsx)
             
             if tentativa_identificador != estudante['identificador']:
                 tentativa_identificador = estudante['identificador']
@@ -921,9 +921,9 @@ def executar_ajuste_no_municipio_pelo_identificador():
                 esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
             
             print(f'''{estudante['identificador']} - Status: {estudante['status_loc']}''')
-            salvar_status_do_estudante_em_relacao_ao_municipio(arquivo_xlsx, estudante)
+            salvar_status_do_estudante_em_relacao_ao_municipio(censo_xlsx, estudante)
         
-        if not verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(arquivo_xlsx):
+        if not verificar_necessidade_de_ajuste_no_municipio_pelo_identificador(censo_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA AJUSTAR O MUNICÍPIO DE NASCIMENTO !!!!!!!')
