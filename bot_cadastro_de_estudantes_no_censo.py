@@ -946,7 +946,7 @@ if __name__ == '__main__':
     if opcao == VINCULAR_ESTUDANTE_PELO_CPF:
         executar_vinculacao_de_estudantes_no_censo() 
 
-    elif opcao == DEFINIR_LOCALIZACAO_DIFERENCIADA:
+    elif opcao == DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_CPF:
         executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo()
 
     elif opcao == AJUSTAR_3ANO_COCOMITANTE_PELO_CPF:
