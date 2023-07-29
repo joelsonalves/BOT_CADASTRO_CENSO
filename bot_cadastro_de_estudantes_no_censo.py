@@ -8,7 +8,7 @@ TEMPO_DE_ESPERA_PADRAO = 10
 TEMPO_DE_ESPERA_ESTENDIDO = 15
 
 VINCULAR_ESTUDANTE_PELO_CPF = 1
-DEFINIR_LOCALIZACAO_DIFERENCIADA = 2
+DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_CPF = 2
 AJUSTAR_3ANO_COCOMITANTE_PELO_CPF = 3
 AJUSTAR_TURMA_PELO_IDENTIFICADOR = 4
 DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR = 5
@@ -16,7 +16,7 @@ DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR = 6
 
 lista_de_opcoes = [
     VINCULAR_ESTUDANTE_PELO_CPF, 
-    DEFINIR_LOCALIZACAO_DIFERENCIADA,
+    DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_CPF,
     AJUSTAR_3ANO_COCOMITANTE_PELO_CPF,
     AJUSTAR_TURMA_PELO_IDENTIFICADOR,
     DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR,
@@ -52,7 +52,7 @@ def escolher_opcao_de_execucao():
 
 def verificar_necessidade_de_vincular(sisacad_xlsx):
     df = pd.read_excel(sisacad_xlsx, dtype=str)
-    if df.loc[df['STATUS'] == '0'].shape[0] > 0:
+    if df.loc[df['STATUS_VINCULO'] == '0'].shape[0] > 0:
         df = None
         return True
     df = None
@@ -67,11 +67,11 @@ def proximo_estudante_para_vincular(sisacad_xlsx):
         'status': None
     }
     for i in df.index:
-        if df.loc[i, 'STATUS'] == '0':
+        if df.loc[i, 'STATUS_VINCULO'] == '0':
             estudante['index'] = i
             estudante['cpf'] = str(df.loc[i, 'CPF']).replace('"','')
             estudante['turma'] = str(df.loc[i, 'TURMA'])
-            estudante['status'] = str(df.loc[i, 'STATUS'])
+            estudante['status'] = str(df.loc[i, 'STATUS_VINCULO'])
             break
     df = None
     return estudante
@@ -79,7 +79,7 @@ def proximo_estudante_para_vincular(sisacad_xlsx):
 def salvar_status_do_estudante_em_relacao_ao_vinculo(sisacad_xlsx, estudante):
     if estudante['index'] != None:
         df = pd.read_excel(sisacad_xlsx, dtype=str)
-        df.loc[estudante['index'], 'STATUS'] = estudante['status']
+        df.loc[estudante['index'], 'STATUS_VINCULO'] = estudante['status']
         df.to_excel(sisacad_xlsx, index=False)
         df = None
         return True
@@ -227,7 +227,7 @@ def executar_vinculacao_de_estudantes_no_censo():
 
 def verificar_necessidade_de_definir_localizacao(sisacad_xlsx):
     df = pd.read_excel(sisacad_xlsx, dtype=str)
-    if df.loc[(df['STATUS_LOC'] == '0') & (df['STATUS'] == '1')].shape[0] > 0 :
+    if df.loc[(df['STATUS_LOCALIZACAO'] == '0') & (df['STATUS_VINCULO'] == '1')].shape[0] > 0 :
         df = None
         return True
     df = None
@@ -242,11 +242,11 @@ def proximo_estudante_para_definir_localizacao(sisacad_xlsx):
         'status_loc': None
     }
     for i in df.index:
-        if df.loc[i, 'STATUS'] == '1' and df.loc[i, 'STATUS_LOC'] == '0':
+        if df.loc[i, 'STATUS_VINCULO'] == '1' and df.loc[i, 'STATUS_LOCALIZACAO'] == '0':
             estudante['index'] = i
             estudante['cpf'] = str(df.loc[i, 'CPF']).replace('"','')
-            estudante['status'] = str(df.loc[i, 'STATUS'])
-            estudante['status_loc'] = str(df.loc[i, 'STATUS_LOC'])
+            estudante['status'] = str(df.loc[i, 'STATUS_VINCULO'])
+            estudante['status_loc'] = str(df.loc[i, 'STATUS_LOCALIZACAO'])
             break
     df = None
     return estudante
@@ -254,7 +254,7 @@ def proximo_estudante_para_definir_localizacao(sisacad_xlsx):
 def salvar_status_do_estudante_em_relacao_a_localizacao(sisacad_xlsx, estudante):
     if estudante['index'] != None:
         df = pd.read_excel(sisacad_xlsx, dtype=str)
-        df.loc[estudante['index'], 'STATUS_LOC'] = estudante['status_loc']
+        df.loc[estudante['index'], 'STATUS_LOCALIZACAO'] = estudante['status_loc']
         df.to_excel(sisacad_xlsx, index=False)
         df = None
         return True
@@ -273,7 +273,7 @@ def verificar_se_select_definir_localizacao_diferenciada_esta_vazio(page):
 def selecionar_localizacao_diferenciada(page):
     page.locator('#idLocalizacaoDiferenciada').select_option(label='Não está em área de localização diferenciada')
     
-# DEFINIR_LOCALIZACAO_DIFERENCIADA
+# DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_CPF
 def executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo():
 
     with sync_playwright() as p:
@@ -678,7 +678,7 @@ def executar_ajuste_de_turma_pelo_identificador():
 
 def verificar_necessidade_de_definir_localizacao_pelo_identificador(censo_xlsx):
     df = pd.read_excel(censo_xlsx, dtype=str)
-    if df.loc[(df['STATUS_LOC'] == '0') & (df['STATUS_TURMA'] == '1')].shape[0] > 0 :
+    if df.loc[(df['STATUS_LOCALIZACAO'] == '0') & (df['STATUS_TURMA'] == '1')].shape[0] > 0 :
         df = None
         return True
     df = None
@@ -693,11 +693,11 @@ def proximo_estudante_para_definir_localizacao_pelo_identificador(censo_xlsx):
         'status_loc': None
     }
     for i in df.index:
-        if df.loc[i, 'STATUS_TURMA'] == '1' and df.loc[i, 'STATUS_LOC'] == '0':
+        if df.loc[i, 'STATUS_TURMA'] == '1' and df.loc[i, 'STATUS_LOCALIZACAO'] == '0':
             estudante['index'] = i
             estudante['identificador'] = str(df.loc[i, 'IDENTIFICADOR'])
             estudante['status_turma'] = str(df.loc[i, 'STATUS_TURMA'])
-            estudante['status_loc'] = str(df.loc[i, 'STATUS_LOC'])
+            estudante['status_loc'] = str(df.loc[i, 'STATUS_LOCALIZACAO'])
             break
     df = None
     return estudante
@@ -705,7 +705,7 @@ def proximo_estudante_para_definir_localizacao_pelo_identificador(censo_xlsx):
 def salvar_status_do_estudante_em_relacao_a_localizacao_pelo_identificador(censo_xlsx, estudante):
     if estudante['index'] != None:
         df = pd.read_excel(censo_xlsx, dtype=str)
-        df.loc[estudante['index'], 'STATUS_LOC'] = estudante['status_loc']
+        df.loc[estudante['index'], 'STATUS_LOCALIZACAO'] = estudante['status_loc']
         df.to_excel(censo_xlsx, index=False)
         df = None
         return True
