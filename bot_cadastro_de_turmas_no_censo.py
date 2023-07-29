@@ -7,7 +7,7 @@ class Bot:
 
         self.__URL_PRINCIPAL = 'https://censobasico.inep.gov.br/'
         self.__URL_CADASTRO_DE_TURMA = 'https://censobasico.inep.gov.br/censobasico/#/turma/cadastrar'
-        self.__PLANILHA = 'planilha_de_cadastro_de_turmas_no_censo.xlsx'
+        self.__PLANILHA = 'turmas.xlsx'
         self.__index = None
         self.__nome_da_turma = None
         self.__codigo_do_curso = None
