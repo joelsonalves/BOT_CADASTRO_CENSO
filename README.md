@@ -6,7 +6,7 @@
 - Instalar Git (https://git-scm.com)
 - Instalar complementos: pip install pandas openpyxl playwright
 - Instalar complementos do PlayWright: playwright install
-- Clonar o repositório: git clone 
+- Clonar o repositório: git clone https://github.com/joelsonalves/BOT_CADASTRO_CENSO.git
 
 # Execução
 
