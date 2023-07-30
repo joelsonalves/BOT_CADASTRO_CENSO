@@ -69,7 +69,7 @@ def proximo_estudante_para_vincular(sisacad_xlsx):
     for i in df.index:
         if df.loc[i, 'STATUS_VINCULO'] == '0':
             estudante['index'] = i
-            estudante['cpf'] = str(df.loc[i, 'CPF']).replace('"','')
+            estudante['cpf'] = str(df.loc[i, 'CPF']).replace('"','').zfill(11)
             estudante['turma'] = str(df.loc[i, 'TURMA'])
             estudante['status'] = str(df.loc[i, 'STATUS_VINCULO'])
             break
@@ -247,7 +247,7 @@ def proximo_estudante_para_definir_localizacao(sisacad_xlsx):
     for i in df.index:
         if df.loc[i, 'STATUS_VINCULO'] == '1' and df.loc[i, 'STATUS_LOCALIZACAO'] == '0':
             estudante['index'] = i
-            estudante['cpf'] = str(df.loc[i, 'CPF']).replace('"','')
+            estudante['cpf'] = str(df.loc[i, 'CPF']).replace('"','').zfill(11)
             estudante['status'] = str(df.loc[i, 'STATUS_VINCULO'])
             estudante['status_loc'] = str(df.loc[i, 'STATUS_LOCALIZACAO'])
             break

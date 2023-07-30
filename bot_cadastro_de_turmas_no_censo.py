@@ -249,7 +249,7 @@ class Bot:
                 
                 bot.__selecionar_proxima_turma_para_cadastrar()
                 
-                print(f'Trabalhando na linha nº {bot.__index + 1} da planilha.')
+                print(f'Trabalhando na linha nº {bot.__index + 2} da planilha.')
 
                 bot.__cadastrar_turma(page)
 
