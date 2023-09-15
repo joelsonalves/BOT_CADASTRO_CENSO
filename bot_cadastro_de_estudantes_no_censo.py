@@ -1010,32 +1010,21 @@ def salvar_dados_pessoais_do_estudante(censo_xlsx, estudante):
 
 def extrair_dados_pessoais(page):
 
-    print('entrou...')
-
     texto = page.evaluate(''' () => {
                           
         return document.querySelectorAll('div.well.well-sm')[3].innerText;
                           
     } ''')
 
-    print(texto)
-
     lista = texto.split('\n')
 
-    print(lista)
-
     proximo = len(lista) - 1
-
-    print(proximo)
 
     while (proximo > 0):
         lista.pop(proximo)
         proximo -= 2
 
-    print(lista)
-
     return lista
-
 
 # EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR
 def executar_extracao_de_dados_pessoais_pelo_identificador():
@@ -1056,23 +1045,6 @@ def executar_extracao_de_dados_pessoais_pelo_identificador():
 
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
-
-        estudante = proximo_estudante_para_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx)
-
-        estudante['status_dados_pessoais'] = '2'
-
-        definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
-        acessar_pagina_de_cadastro(page)
-
-        definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
-        preencher_identificador(page, estudante['identificador'])
-        clicar_em_pesquisar(page)
-
-        estudante['status_dados_pessoais'] = '3'
-
-        lista_de_dados_pessoais = extrair_dados_pessoais(page)
-
-        print(lista_de_dados_pessoais)
 
         while verificar_necessidade_de_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx):
 
@@ -1096,6 +1068,8 @@ def executar_extracao_de_dados_pessoais_pelo_identificador():
                 clicar_em_pesquisar(page)
 
                 estudante['status_dados_pessoais'] = '3'
+
+                esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
 
                 lista_de_dados_pessoais = extrair_dados_pessoais(page)
 
