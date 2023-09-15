@@ -1008,7 +1008,7 @@ def salvar_dados_pessoais_do_estudante(censo_xlsx, estudante):
         return True
     return False
 
-def extrair_dados_pessoais(self, page):
+def extrair_dados_pessoais(page):
 
     print('entrou...')
 
