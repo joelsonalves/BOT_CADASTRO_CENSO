@@ -1018,9 +1018,9 @@ def extrair_dados_pessoais(page):
 
     lista = texto.split('\n')
 
-    proximo = len(lista) - 1
+    proximo = len(lista) - 2
 
-    while (proximo > 0):
+    while (proximo >= 0):
         lista.pop(proximo)
         proximo -= 2
 
@@ -1069,7 +1069,7 @@ def executar_extracao_de_dados_pessoais_pelo_identificador():
 
                 estudante['status_dados_pessoais'] = '3'
 
-                esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
+                esperar(page, TEMPO_DE_ESPERA_ESTENDIDO)
 
                 lista_de_dados_pessoais = extrair_dados_pessoais(page)
 
