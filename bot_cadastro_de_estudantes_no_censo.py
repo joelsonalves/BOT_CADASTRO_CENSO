@@ -13,6 +13,7 @@ AJUSTAR_3ANO_COCOMITANTE_PELO_CPF = 3
 AJUSTAR_TURMA_PELO_IDENTIFICADOR = 4
 DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR = 5
 DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR = 6
+EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR = 7
 
 lista_de_opcoes = [
     VINCULAR_ESTUDANTE_PELO_CPF, 
@@ -20,7 +21,8 @@ lista_de_opcoes = [
     AJUSTAR_3ANO_COCOMITANTE_PELO_CPF,
     AJUSTAR_TURMA_PELO_IDENTIFICADOR,
     DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR,
-    DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR
+    DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR,
+    EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR
 ]
 
 sisacad_xlsx = 'estudantes_sisacad.xlsx'
@@ -40,6 +42,7 @@ def escolher_opcao_de_execucao():
         print('4: Ajustar turma do CENSO pelo identificador.')
         print('5: Definir localização diferenciada, caso necessário, consultando pelo identificador.')
         print('6: Ajustar município de nascimento, consultando pelo identificador.')
+        print('7: Extrair dados pessoais, consultando pelo identificador.')
         try:
             opcao = int(input('Digite o número da opção desejada e em seguida tecle [ENTER]: '))
         except BaseException:
@@ -951,6 +954,171 @@ def executar_ajuste_no_municipio_pelo_identificador():
         except BaseException:
             pass
 
+def verificar_necessidade_de_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
+    if df.loc[(df['STATUS_DADOS_PESSOAIS'] == '0')].shape[0] > 0 :
+        df = None
+        return True
+    df = None
+    return False
+
+def proximo_estudante_para_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx):
+    df = pd.read_excel(censo_xlsx, dtype=str)
+    estudante = {
+        'index': None,
+        'identificador': None,
+        'nome': None,
+        'cpf': None,
+        'data_de_nascimento': None,
+        'estado_de_nascimento': None,
+        'municipio_de_nascimento': None,
+        'filiacao1': None,
+        'filiacao2': None,
+        'status_dados_pessoais': None
+    }
+    for i in df.index:
+        if df.loc[i, 'STATUS_DADOS_PESSOAIS'] == '0':
+            estudante['index'] = i
+            estudante['identificador'] = str(df.loc[i, 'IDENTIFICADOR'])
+            estudante['nome'] = str(df.loc[i, 'NOME'])
+            estudante['cpf'] = str(df.loc[i, 'CPF'])
+            estudante['data_de_nascimento'] = str(df.loc[i, 'DATA_DE_NASCIMENTO'])
+            estudante['estado_de_nascimento'] = str(df.loc[i, 'ESTADO_DE_NASCIMENTO'])
+            estudante['municipio_de_nascimento'] = str(df.loc[i, 'MUNICIPIO_DE_NASCIMENTO'])
+            estudante['filiacao1'] = str(df.loc[i, 'FILIACAO1'])
+            estudante['filiacao2'] = str(df.loc[i, 'FILIACAO2'])
+            estudante['status_dados_pessoais'] = str(df.loc[i, 'STATUS_DADOS_PESSOAIS'])
+            break
+    df = None
+    return estudante
+
+def salvar_dados_pessoais_do_estudante(censo_xlsx, estudante):
+    if estudante['index'] != None:
+        df = pd.read_excel(censo_xlsx, dtype=str)
+        df.loc[estudante['index'], 'NOME'] = estudante['nome']
+        df.loc[estudante['index'], 'CPF'] = estudante['cpf']
+        df.loc[estudante['index'], 'DATA_DE_NASCIMENTO'] = estudante['data_de_nascimento']
+        df.loc[estudante['index'], 'ESTADO_DE_NASCIMENTO'] = estudante['estado_de_nascimento']
+        df.loc[estudante['index'], 'MUNICIPIO_DE_NASCIMENTO'] = estudante['municipio_de_nascimento']
+        df.loc[estudante['index'], 'FILIACAO1'] = estudante['filiacao1']
+        df.loc[estudante['index'], 'FILIACAO2'] = estudante['filiacao2']
+        df.loc[estudante['index'], 'STATUS_DADOS_PESSOAIS'] = estudante['status_dados_pessoais']
+        df.to_excel(censo_xlsx, index=False)
+        df = None
+        return True
+    return False
+
+def extrair_dados_pessoais(self, page):
+
+    texto = page.evaluate(''' () => {
+                          
+        return document.querySelectorAll('div.well.well-sm')[3].innerText;
+                          
+    } ''')
+
+    lista = texto.split('\n')
+
+    proximo = len(lista) - 1
+    while (proximo > 0):
+        lista.pop(proximo)
+        proximo -= 2
+
+    return lista
+
+
+# EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR
+def executar_extracao_de_dados_pessoais_pelo_identificador():
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        context = browser.new_context()
+        page = context.new_page()
+        
+        tentativa_cont = 1
+        tentativa_identificador = None
+        
+        try:
+            definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
+            acessar_pagina_inicial(page)
+        except BaseException:
+            pass
+
+        #Aguardar login humano
+        input('\nApós fazer login, tecle [Enter]: ')
+
+        while verificar_necessidade_de_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx):
+
+            estudante = proximo_estudante_para_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx)
+            
+            if tentativa_identificador != estudante['identificador']:
+                tentativa_identificador = estudante['identificador']
+                tentativa_cont = 1
+            
+            print(f'''{estudante['identificador']} - Tentantiva {tentativa_cont}/{TENTATIVAS}''')
+
+            try:
+
+                estudante['status_dados_pessoais'] = '2'
+
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
+                acessar_pagina_de_cadastro(page)
+
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
+                preencher_identificador(page, estudante['identificador'])
+                clicar_em_pesquisar(page)
+
+                estudante['status_dados_pessoais'] = '3'
+
+                lista_de_dados_pessoais = extrair_dados_pessoais(page)
+
+                estudante['status_dados_pessoais'] = '4'
+
+                estudante['nome'] = lista_de_dados_pessoais[0]
+                estudante['cpf'] = lista_de_dados_pessoais[1]
+                estudante['data_de_nascimento'] = lista_de_dados_pessoais[2]
+                estudante['estado_de_nascimento']  = lista_de_dados_pessoais[3]
+                estudante['municipio_de_nascimento']  = lista_de_dados_pessoais[4]
+                estudante['filiacao1'] = lista_de_dados_pessoais[5]
+                estudante['filiacao2'] = lista_de_dados_pessoais[6]
+                
+                estudante['status_dados_pessoais'] = '1'
+        
+            except BaseException:
+                if estudante['status_dados_pessoais'] == '2':
+                    print(f'Falha no acesso ao site. Aguardando {TEMPO_DE_ESPERA_PADRAO} segundos para tentar novamente...')
+                    try:
+                        esperar(page, TEMPO_DE_ESPERA_PADRAO)
+                        recarregar_pagina(page)
+                    except BaseException:
+                        break
+                    else:
+                        continue
+
+                if tentativa_cont < TENTATIVAS:
+                    tentativa_cont += 1
+                    continue
+            else:
+                esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
+            
+            print(f'''{estudante['identificador']} - Status: {estudante['status_dados_pessoais']}''')
+            salvar_dados_pessoais_do_estudante(censo_xlsx, estudante)
+        
+        if not verificar_necessidade_de_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx):
+            print('####### TRABALHO CONCLUÍDO #######')
+        else:
+            print('!!!!!!! AINDA HÁ ESTUDANTES PARA EXTRAÇÃO DE DADOS PESSOAIS !!!!!!!')
+
+        try:
+            esperar(page, TEMPO_DE_ESPERA_ESTENDIDO)
+        except BaseException:
+            pass
+
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
+
 # Carregamento da aplicação
 if __name__ == '__main__':
 
@@ -974,4 +1142,7 @@ if __name__ == '__main__':
     
     elif opcao == DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR:
         executar_ajuste_no_municipio_pelo_identificador()
+
+    elif opcao == EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR:
+        executar_extracao_de_dados_pessoais_pelo_identificador()
     
