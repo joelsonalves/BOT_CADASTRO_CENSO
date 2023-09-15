@@ -967,13 +967,13 @@ def proximo_estudante_para_extracao_de_dados_pessoais_pelo_identificador(censo_x
     estudante = {
         'index': None,
         'identificador': None,
-        'nome': None,
-        'cpf': None,
-        'data_de_nascimento': None,
-        'estado_de_nascimento': None,
-        'municipio_de_nascimento': None,
-        'filiacao1': None,
-        'filiacao2': None,
+        'nome': '',
+        'cpf': '',
+        'data_de_nascimento': '',
+        'estado_de_nascimento': '',
+        'municipio_de_nascimento': '',
+        'filiacao1': '',
+        'filiacao2': '',
         'status_dados_pessoais': None
     }
     for i in df.index:
@@ -1080,8 +1080,10 @@ def executar_extracao_de_dados_pessoais_pelo_identificador():
                 estudante['data_de_nascimento'] = lista_de_dados_pessoais[2]
                 estudante['estado_de_nascimento']  = lista_de_dados_pessoais[3]
                 estudante['municipio_de_nascimento']  = lista_de_dados_pessoais[4]
-                estudante['filiacao1'] = lista_de_dados_pessoais[5]
-                estudante['filiacao2'] = lista_de_dados_pessoais[6]
+                if len(lista_de_dados_pessoais) > 5:
+                    estudante['filiacao1'] = lista_de_dados_pessoais[5]
+                    if len(lista_de_dados_pessoais) > 6:
+                        estudante['filiacao2'] = lista_de_dados_pessoais[6]
                 
                 estudante['status_dados_pessoais'] = '1'
         
