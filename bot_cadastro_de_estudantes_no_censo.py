@@ -1010,18 +1010,29 @@ def salvar_dados_pessoais_do_estudante(censo_xlsx, estudante):
 
 def extrair_dados_pessoais(self, page):
 
+    print('entrou...')
+
     texto = page.evaluate(''' () => {
                           
         return document.querySelectorAll('div.well.well-sm')[3].innerText;
                           
     } ''')
 
+    print(texto)
+
     lista = texto.split('\n')
 
+    print(lista)
+
     proximo = len(lista) - 1
+
+    print(proximo)
+
     while (proximo > 0):
         lista.pop(proximo)
         proximo -= 2
+
+    print(lista)
 
     return lista
 
