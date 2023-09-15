@@ -1046,6 +1046,23 @@ def executar_extracao_de_dados_pessoais_pelo_identificador():
         #Aguardar login humano
         input('\nApós fazer login, tecle [Enter]: ')
 
+        estudante = proximo_estudante_para_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx)
+
+        estudante['status_dados_pessoais'] = '2'
+
+        definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
+        acessar_pagina_de_cadastro(page)
+
+        definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
+        preencher_identificador(page, estudante['identificador'])
+        clicar_em_pesquisar(page)
+
+        estudante['status_dados_pessoais'] = '3'
+
+        lista_de_dados_pessoais = extrair_dados_pessoais(page)
+
+        print(lista_de_dados_pessoais)
+
         while verificar_necessidade_de_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx):
 
             estudante = proximo_estudante_para_extracao_de_dados_pessoais_pelo_identificador(censo_xlsx)
