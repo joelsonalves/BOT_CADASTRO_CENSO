@@ -1069,7 +1069,10 @@ def executar_extracao_de_dados_pessoais_pelo_identificador():
 
                 estudante['status_dados_pessoais'] = '3'
 
-                esperar(page, TEMPO_DE_ESPERA_ESTENDIDO)
+                #esperar(page, TEMPO_DE_ESPERA_ESTENDIDO)
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
+                page.wait_for_selector('div.well.well-sm >> nth=3')
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
 
                 lista_de_dados_pessoais = extrair_dados_pessoais(page)
 
