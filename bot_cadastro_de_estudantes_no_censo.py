@@ -10,15 +10,17 @@ TEMPO_DE_ESPERA_ESTENDIDO = 15
 VINCULAR_ESTUDANTE_PELO_CPF = 1
 DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_CPF = 2
 AJUSTAR_3ANO_COCOMITANTE_PELO_CPF = 3
-AJUSTAR_TURMA_PELO_IDENTIFICADOR = 4
-DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR = 5
-DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR = 6
-EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR = 7
+AJUSTAR_3ANO_COCOMITANTE_PELO_IDENTIFICADOR = 4
+AJUSTAR_TURMA_PELO_IDENTIFICADOR = 5
+DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR = 6
+DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR = 7
+EXTRAIR_DADOS_PESSOAIS_PELO_IDENTIFICADOR = 8
 
 lista_de_opcoes = [
     VINCULAR_ESTUDANTE_PELO_CPF, 
     DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_CPF,
     AJUSTAR_3ANO_COCOMITANTE_PELO_CPF,
+    AJUSTAR_3ANO_COCOMITANTE_PELO_IDENTIFICADOR,
     AJUSTAR_TURMA_PELO_IDENTIFICADOR,
     DEFINIR_LOCALIZACAO_DIFERENCIADA_PELO_IDENTIFICADOR,
     DEFINIR_MUNICIPIO_DE_NASCIMENTO_PELO_IDENTIFICADOR,
@@ -39,10 +41,11 @@ def escolher_opcao_de_execucao():
         print('1: Vincular estudante pelo CPF.')
         print('2: Definir localização diferenciada, caso necessário, consultando pelo CPF.')
         print('3: Ajustar estudante do 3º ano, no ano anterior, para subsequente, pelo CPF.')
-        print('4: Ajustar turma do CENSO pelo identificador.')
-        print('5: Definir localização diferenciada, caso necessário, consultando pelo identificador.')
-        print('6: Ajustar município de nascimento, consultando pelo identificador.')
-        print('7: Extrair dados pessoais, consultando pelo identificador.')
+        print('4: Ajustar estudante do 3º ano, no ano anterior, para subsequente, pelo identificador.')
+        print('5: Ajustar turma do CENSO pelo identificador.')
+        print('6: Definir localização diferenciada, caso necessário, consultando pelo identificador.')
+        print('7: Ajustar município de nascimento, consultando pelo identificador.')
+        print('8: Extrair dados pessoais, consultando pelo identificador.')
         try:
             opcao = int(input('Digite o número da opção desejada e em seguida tecle [ENTER]: '))
         except BaseException:
@@ -430,8 +433,7 @@ def verificar_se_estudante_era_turma_terminal(page):
         return True
     return False
 
-
-# AJUSTAR_3ANO_COCOMITANTE_PELO_CPF
+# AJUSTAR_3ANO_COCOMITANTE_PELO_IDENTIFICADOR
 def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente():
 
     with sync_playwright() as p:
@@ -531,6 +533,141 @@ def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente():
             salvar_status_do_estudante_em_relacao_ao_3ano(censo_xlsx, estudante)
         
         if not verificar_necessidade_de_ajustar_para_subsequente(censo_xlsx):
+            print('####### TRABALHO CONCLUÍDO #######')
+        else:
+            print('!!!!!!! AINDA HÁ ESTUDANTES PARA AJUSTAR PARA SUBSEQUENTE !!!!!!!')
+
+        try:
+            esperar(page, TEMPO_DE_ESPERA_ESTENDIDO)
+        except BaseException:
+            pass
+
+        try:
+            context.close()
+            browser.close()
+        except BaseException:
+            pass
+
+def proximo_estudante_para_ajustar_para_subsequente_pelo_cpf(sisacad_xlsx):
+    df = pd.read_excel(sisacad_xlsx, dtype=str)
+    estudante = {
+        'index': None,
+        'identificador': None,
+        'turma': None,
+        'status_3ano': None
+    }
+    for i in df.index:
+        if df.loc[i, 'STATUS_3ANO'] == '0':
+            estudante['index'] = i
+            estudante['identificador'] = str(df.loc[i, 'CPF']).replace(' ','')
+            estudante['turma'] = str(df.loc[i, 'TURMA_SUBSEQUENTE'])
+            estudante['status_3ano'] = str(df.loc[i, 'STATUS_3ANO'])
+            break
+    df = None
+    return estudante
+
+# AJUSTAR_3ANO_COCOMITANTE_PELO_CPF
+def executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente_pelo_cpf():
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        context = browser.new_context()
+        page = context.new_page()
+        
+        tentativa_cont = 1
+        tentativa_identificador = None
+        
+        try:
+            definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
+            acessar_pagina_inicial(page)
+        except BaseException:
+            pass
+
+        #Aguardar login humano
+        input('\nApós fazer login, tecle [Enter]: ')
+
+        while verificar_necessidade_de_ajustar_para_subsequente(sisacad_xlsx):
+
+            estudante = proximo_estudante_para_ajustar_para_subsequente_pelo_cpf(sisacad_xlsx)
+            
+            if tentativa_identificador != estudante['identificador']:
+                tentativa_identificador = estudante['identificador']
+                tentativa_cont = 1
+            
+            print(f'''{estudante['identificador']} - Tentantiva {tentativa_cont}/{TENTATIVAS}''')
+
+            try:
+
+                estudante['status_3ano'] = '2'
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_ESTENDIDO)
+                acessar_pagina_de_cadastro(page)
+
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
+                #preencher_cpf(page, estudante['cpf'])
+                #preencher_identificador(page, estudante['identificador'])
+                preencher_cpf(page, estudante['identificador'])
+                clicar_em_pesquisar(page)
+                
+                estudante['status_3ano'] = '3'
+                #clicar_em_editar_dados_pessoais(page)
+                clicar_em_visualizar_vinculos_ano_anterior(page)
+
+                estudante['status_3ano'] = '4'
+                #aguardar_select_definir_localizacao_diferenciada(page)
+                clicar_no_segundo_vinculo(page)
+
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_REDUZIDO)
+
+                estudante['status_3ano'] = '5'
+                if verificar_se_estudante_era_turma_terminal(page):
+                    estudante['status_3ano'] = '6'
+                    #desvincular(page)
+
+                    try:
+                        desvincular(page)
+                    except BaseException:
+                        pass
+                    else:
+                        definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
+                        #preencher_identificador(page, estudante['identificador'])
+                        preencher_cpf(page, estudante['identificador'])
+                        clicar_em_pesquisar(page)
+                        definir_tempo_de_espera(page, TEMPO_DE_ESPERA_REDUZIDO)
+
+                estudante['status_3ano'] = '7'
+                clicar_em_vincular(page)
+
+                definir_tempo_de_espera(page, TEMPO_DE_ESPERA_PADRAO)
+
+                estudante['status_3ano'] = '8'
+                selecionar_turma(page, estudante['turma'])
+
+                estudante['status_3ano'] = '9'
+                clicar_em_enviar(page)
+
+                estudante['status_3ano'] = '1'
+        
+            except BaseException:
+                if estudante['status_3ano'] == '2':
+                    print(f'Falha no acesso ao site. Aguardando {TEMPO_DE_ESPERA_PADRAO} segundos para tentar novamente...')
+                    try:
+                        esperar(page, TEMPO_DE_ESPERA_PADRAO)
+                        recarregar_pagina(page)
+                    except BaseException:
+                        break
+                    else:
+                        continue
+
+                if tentativa_cont < TENTATIVAS:
+                    tentativa_cont += 1
+                    continue
+            else:
+                esperar(page, TEMPO_DE_ESPERA_REDUZIDO)
+            
+            print(f'''{estudante['identificador']} - Status: {estudante['status_3ano']}''')
+            salvar_status_do_estudante_em_relacao_ao_3ano(sisacad_xlsx, estudante)
+        
+        if not verificar_necessidade_de_ajustar_para_subsequente(sisacad_xlsx):
             print('####### TRABALHO CONCLUÍDO #######')
         else:
             print('!!!!!!! AINDA HÁ ESTUDANTES PARA AJUSTAR PARA SUBSEQUENTE !!!!!!!')
@@ -1139,6 +1276,9 @@ if __name__ == '__main__':
         executar_definicao_de_localizacao_diferenciada_de_estudantes_no_censo()
 
     elif opcao == AJUSTAR_3ANO_COCOMITANTE_PELO_CPF:
+        executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente_pelo_cpf()
+
+    elif opcao == AJUSTAR_3ANO_COCOMITANTE_PELO_IDENTIFICADOR:
         executar_ajuste_estudante_3ano_e_eja_cocomitante_para_subsequente()
 
     elif opcao == AJUSTAR_TURMA_PELO_IDENTIFICADOR:
